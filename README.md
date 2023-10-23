@@ -4,7 +4,7 @@ This plugin is designed to remux all media in your library. Fixing common stream
 
 ### ***WARNING*** This plugin changes media files perminantly and currently cannot recover from inturruption. It is highly a work in progress, this repo is for development purposes only at this time.
 
-## 0. Things you need to get started
+## Requirements
 
 As this project is for development purposes, no precompiled binaries are provided.
 
