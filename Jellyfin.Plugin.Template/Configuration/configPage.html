@@ -2,35 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Template</title>
+    <title>Remuxer</title>
 </head>
 <body>
-    <div id="TemplateConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+    <div id="RemuxerConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
         <div data-role="content">
             <div class="content-primary">
-                <form id="TemplateConfigForm">
-                    <div class="selectContainer">
-                        <label class="selectLabel" for="Options">Several Options</label>
-                        <select is="emby-select" id="Options" name="Options" class="emby-select-withcolor emby-select">
-                            <option id="optOneOption" value="OneOption">One Option</option>
-                            <option id="optAnotherOption" value="AnotherOption">Another Option</option>
-                        </select>
-                    </div>
+                <form id="RemuxerConfigForm">
                     <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="AnInteger">An Integer</label>
-                        <input id="AnInteger" name="AnInteger" type="number" is="emby-input" min="0" />
-                        <div class="fieldDescription">A Description</div>
+                        <label class="inputLabel inputLabelUnfocused" for="WhitelistedLanguages">Whitelisted Languages</label>
+                        <input id="WhitelistedLanguages" name="WhitelistedLanguages" type="text" is="emby-input" />
+                        <div class="fieldDescription">languages to keep during remuxing</div>
                     </div>
                     <div class="checkboxContainer checkboxContainer-withDescription">
                         <label class="emby-checkbox-label">
-                            <input id="TrueFalseSetting" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
-                            <span>A Checkbox</span>
+                            <input id="KeepDefaultTrack" name="KeepDefaultTrack" type="checkbox" is="emby-checkbox" />
+                            <span>Keep the default audio and subtitle tracks</span>
                         </label>
                     </div>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="AString">A String</label>
-                        <input id="AString" name="AString" type="text" is="emby-input" />
-                        <div class="fieldDescription">Another Description</div>
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="StripMode">Strip Mode</label>
+                        <select is="emby-select" id="StripMode" name="StripMode" class="emby-select-withcolor emby-select">
+                            <option id="optDoNone" value="DoNone">Disabled</option>
+                            <option id="optStripSubtitles" value="StripSubtitles">Strip Unwanted Subtitles</option>
+                            <option id="optStripAudio" value="StripAudio">Strip Unwanted Audio</option>
+                            <option id="optStripBoth" value="StripBoth">Strip Both</option>
+                        </select>
+                    </div>
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="ExtractSubsMode">Subtitle Extract Mode</label>
+                        <select is="emby-select" id="ExtractSubsMode" name="ExtractSubsMode" class="emby-select-withcolor emby-select">
+                            <option id="optDoNone" value="DoNone">Disabled</option>
+                            <option id="optExtractOnly" value="ExtractOnly">ExtractOnly</option>
+                            <option id="optExtractAndRemux" value="ExtractAndRemux">Extract and Remux</option>
+                        </select>
+                    </div>
+                    <div class="checkboxContainer checkboxContainer-withDescription">
+                        <label class="emby-checkbox-label">
+                            <input id="ExtractOnlyTextSubs" name="ExtractOnlyTextSubs" type="checkbox" is="emby-checkbox" />
+                            <span>Only Extract Text Subtitles</span>
+                        </label>
+                    </div>
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="OCRMode">OCR Mode</label>
+                        <select is="emby-select" id="OCRMode" name="OCRMode" class="emby-select-withcolor emby-select">
+                            <option id="optDoNone" value="DoNone">Disabled</option>
+                            <option id="optTesseract" value="Tesseract">Tesseract</option>
+                        </select>
+                    </div>
+                    <div class="checkboxContainer checkboxContainer-withDescription">
+                        <label class="emby-checkbox-label">
+                            <input id="OCRAlways" name="OCRAlways" type="checkbox" is="emby-checkbox" />
+                            <span>OCR Image Subtitles even if text subtitles are available</span>
+                        </label>
                     </div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
@@ -41,31 +65,36 @@
             </div>
         </div>
         <script type="text/javascript">
-            var TemplateConfig = {
-                pluginUniqueId: 'eb5d7894-8eef-4b36-aa6f-5d124e828ce1'
+            var RemuxerConfig = {
+                pluginUniqueId: '90E36403-4321-49BC-A9CD-DC5221C4D74B'
             };
 
-            document.querySelector('#TemplateConfigPage')
-                .addEventListener('pageshow', function() {
-                    Dashboard.showLoadingMsg();
-                    ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
-                        document.querySelector('#Options').value = config.Options;
-                        document.querySelector('#AnInteger').value = config.AnInteger;
-                        document.querySelector('#TrueFalseSetting').checked = config.TrueFalseSetting;
-                        document.querySelector('#AString').value = config.AString;
-                        Dashboard.hideLoadingMsg();
-                    });
-                });
-
-            document.querySelector('#TemplateConfigForm')
-                .addEventListener('submit', function(e) {
+            document.querySelector('#RemuxerConfigPage').addEventListener('pageshow', function() {
                 Dashboard.showLoadingMsg();
-                ApiClient.getPluginConfiguration(TemplateConfig.pluginUniqueId).then(function (config) {
-                    config.Options = document.querySelector('#Options').value;
-                    config.AnInteger = document.querySelector('#AnInteger').value;
-                    config.TrueFalseSetting = document.querySelector('#TrueFalseSetting').checked;
-                    config.AString = document.querySelector('#AString').value;
-                    ApiClient.updatePluginConfiguration(TemplateConfig.pluginUniqueId, config).then(function (result) {
+                ApiClient.getPluginConfiguration(RemuxerConfig.pluginUniqueId).then(function (config) {
+                    document.querySelector('#WhitelistedLanguages').value = config.WhitelistedLanguages;
+                    document.querySelector('#KeepDefaultTrack').checked = config.KeepDefaultTrack;
+                    document.querySelector('#StripMode').value = config.StripMode;
+                    document.querySelector('#ExtractSubsMode').value = config.ExtractSubsMode;
+                    document.querySelector('#ExtractOnlyTextSubs').checked = config.ExtractOnlyTextSubs;
+                    document.querySelector('#OCRMode').value = config.OCRMode;
+                    document.querySelector('#OCRAlways').checked = config.OCRAlways;
+                    Dashboard.hideLoadingMsg();
+                });
+            });
+
+            document.querySelector('#RemuxerConfigForm').addEventListener('submit', function(e) {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(RemuxerConfig.pluginUniqueId).then(function (config) {
+                    config.WhitelistedLanguages = document.querySelector('#WhitelistedLanguages').value;
+                    config.KeepDefaultTrack = document.querySelector('#KeepDefaultTrack').checked;
+                    config.StripMode = document.querySelector('#StripMode').value;
+                    config.ExtractSubsMode = document.querySelector('#ExtractSubsMode').value;
+                    config.ExtractOnlyTextSubs = document.querySelector('#ExtractOnlyTextSubs').checked;
+                    config.OCRMode = document.querySelector('#OCRMode').value;
+                    config.OCRAlways = document.querySelector('#OCRAlways').checked;
+
+                    ApiClient.updatePluginConfiguration(RemuxerConfig.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
                     });
                 });

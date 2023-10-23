@@ -1,21 +1,68 @@
 using MediaBrowser.Model.Plugins;
 
-namespace Jellyfin.Plugin.Template.Configuration;
+namespace Jellyfin.Plugin.Remuxer.Configuration;
 
 /// <summary>
-/// The configuration options.
+/// Configuration defining how to handle stripping tracks from media.
 /// </summary>
-public enum SomeOptions
+public enum RemuxStripMode
 {
     /// <summary>
-    /// Option one.
+    /// Do not touch files.
     /// </summary>
-    OneOption,
+    DoNone,
 
     /// <summary>
-    /// Second option.
+    /// Remove unwanted Subtitle Tracks from all media.
     /// </summary>
-    AnotherOption
+    StripSubtitles,
+
+    /// <summary>
+    /// Remove unwanted Audio Tracks from all media.
+    /// </summary>
+    StripAudio,
+
+    /// <summary>
+    /// Remove unwanted Audio and Subtitle Tracks from all media.
+    /// </summary>
+    StripBoth,
+}
+
+/// <summary>
+/// Configuration defining how to handle extracting subtitle tracks from media.
+/// </summary>
+public enum RemuxExtractMode
+{
+    /// <summary>
+    /// Do not extract subs.
+    /// </summary>
+    DoNone,
+
+    /// <summary>
+    /// Extracts Subtitle Tracks, preserving the subtitles in the container.
+    /// </summary>
+    ExtractOnly,
+
+    /// <summary>
+    /// Extracts Subtitle Tracks, deleting the subtitles in the container.
+    /// </summary>
+    ExtractAndRemux,
+}
+
+/// <summary>
+/// Configuration defining how to OCR image based subs.
+/// </summary>
+public enum RemuxOCRMode
+{
+    /// <summary>
+    /// Do not OCR files.
+    /// </summary>
+    DoNone,
+
+    /// <summary>
+    /// Utilizes Tesseract to OCR image based subtitles.
+    /// </summary>
+    Tesseract,
 }
 
 /// <summary>
@@ -28,30 +75,47 @@ public class PluginConfiguration : BasePluginConfiguration
     /// </summary>
     public PluginConfiguration()
     {
-        // set default options here
-        Options = SomeOptions.AnotherOption;
-        TrueFalseSetting = true;
-        AnInteger = 2;
-        AString = "string";
+        WhitelistedLanguages = "eng";
+        KeepDefaultTrack = true;
+        StripMode = RemuxStripMode.DoNone;
+        ExtractSubsMode = RemuxExtractMode.DoNone;
+        ExtractOnlyTextSubs = true;
+        OCRMode = RemuxOCRMode.DoNone;
+        OCRAlways = false;
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether some true or false setting is enabled..
+    /// Gets or sets the languages to keep during remuxing.
     /// </summary>
-    public bool TrueFalseSetting { get; set; }
+    public string WhitelistedLanguages { get; set; }
 
     /// <summary>
-    /// Gets or sets an integer setting.
+    /// Gets or sets a value indicating whether to keep the default audio and subtitle tracks.
     /// </summary>
-    public int AnInteger { get; set; }
+    public bool KeepDefaultTrack { get; set;  }
 
     /// <summary>
-    /// Gets or sets a string setting.
+    /// Gets or sets the mode to use when stripping subtitle and audio tracks from the media container.
     /// </summary>
-    public string AString { get; set; }
+    public RemuxStripMode StripMode { get; set; }
 
     /// <summary>
-    /// Gets or sets an enum option.
+    /// Gets or sets the mode to use when extracting subtitles.
     /// </summary>
-    public SomeOptions Options { get; set; }
+    public RemuxExtractMode ExtractSubsMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to extract image subtitle tracks.
+    /// </summary>
+    public bool ExtractOnlyTextSubs { get; set; }
+
+    /// <summary>
+    /// Gets or sets the mode to use when using OCR on image subtitles.
+    /// </summary>
+    public RemuxOCRMode OCRMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to OCR Image Subtitles even if text subtitles are available.
+    /// </summary>
+    public bool OCRAlways { get; set; }
 }
