@@ -137,9 +137,10 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                     {
                         var trackId = track.Id;
                         var trackLang = track.Properties!.Language;
-                        var isTextSubtitle = track.Codec!.Contains("S_TEXT", StringComparison.OrdinalIgnoreCase);
-                        var isPgsSubtitle = track.Codec.Contains("S_HDMV/PGS", StringComparison.OrdinalIgnoreCase);
-                        var isVobSubSubtitle = track.Codec.Contains("S_VOBSUB", StringComparison.OrdinalIgnoreCase);
+                        var isTextSubtitle = track.Codec!.Contains("SRT", StringComparison.OrdinalIgnoreCase) ||
+                                             track.Codec!.Contains("ASS", StringComparison.OrdinalIgnoreCase);
+                        var isPgsSubtitle = track.Codec.Contains("PGS", StringComparison.OrdinalIgnoreCase);
+                        var isVobSubSubtitle = track.Codec.Contains("VOB", StringComparison.OrdinalIgnoreCase);
 
                         if (config.ExtractOnlyTextSubs && !isTextSubtitle)
                         {
