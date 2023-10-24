@@ -122,6 +122,97 @@ namespace Jellyfin.Plugin.Remuxer.Tools
 
         public static void ExtractSubtitles(BaseItem video, MkvMergeOutput mkvInfo)
         {
+            var config = Plugin.Instance!.Configuration;
+            var videoPath = video.Path;  // Assuming BaseItem has a Path property that provides the path to the MKV file
+
+            var subtitleTrackIdsToRemove = new List<int>();
+
+            if (config!.ExtractSubsMode != 0)
+            {
+                // Build the argument string for mkvextract
+                var mkvExtractArgs = string.Empty;
+                foreach (var track in mkvInfo.Tracks!)
+                {
+                    if (track.Type == "subtitles")
+                    {
+                        var trackId = track.Id;
+                        var trackLang = track.Properties!.Language;
+                        var isTextSubtitle = track.Codec!.Contains("S_TEXT", StringComparison.OrdinalIgnoreCase);
+                        var isPgsSubtitle = track.Codec.Contains("S_HDMV/PGS", StringComparison.OrdinalIgnoreCase);
+                        var isVobSubSubtitle = track.Codec.Contains("S_VOBSUB", StringComparison.OrdinalIgnoreCase);
+
+                        if (config.ExtractOnlyTextSubs && !isTextSubtitle)
+                        {
+                            continue;  // Skip this track if it's not a text subtitle and the configuration is set to extract text subtitles only
+                        }
+
+                        var fileExtension = isTextSubtitle ? "srt" : isPgsSubtitle ? "sub" : isVobSubSubtitle ? "sup" : "unknown";
+                        var fileName = Path.GetFileNameWithoutExtension(videoPath);
+                        var fileDir = Path.GetDirectoryName(videoPath)!;
+                        var outputSubtitleFilePath = $@"""{Path.Combine(fileDir, $"fileName.{trackId}.{trackLang}.{fileExtension}")}""";
+
+                        mkvExtractArgs += $"{trackId}:{outputSubtitleFilePath} ";
+
+                        if (config.ExtractOnlyTextSubs && isTextSubtitle)
+                        {
+                            subtitleTrackIdsToRemove.Add(trackId);  // Add the text subtitle track id to the list of tracks to be removed if the configuration is set to extract text subtitles only
+                        }
+                    }
+                }
+
+                // Extract subtitles with a single mkvextract call
+                if (mkvExtractArgs.Length > 0)
+                {
+                    var mkvExtractProcess = new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "mkvextract",
+                            Arguments = $@"""{videoPath}"" tracks {mkvExtractArgs}",
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
+                        }
+                    };
+                    mkvExtractProcess.Start();
+                    using StreamReader reader = mkvExtractProcess!.StandardOutput;
+                    string mkvMergeOutput = reader.ReadToEnd();
+                }
+            }
+
+            if (config!.ExtractSubsMode == Configuration.RemuxExtractMode.ExtractAndRemux)
+            {
+                // Remove tracks
+                var subtitleTrackIdsToRemoveArgument = string.Join(",", subtitleTrackIdsToRemove);
+
+                var tmpFolder = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(videoPath))!, "tmp");
+                var outputFilePath = Path.Combine(tmpFolder, Path.GetFileName(videoPath));
+
+                var mkvMergeProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "mkvmerge",
+                        Arguments = $@"-o ""{outputFilePath}"" -s !{subtitleTrackIdsToRemoveArgument} ""{videoPath}""",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                    }
+                };
+                mkvMergeProcess.Start();
+                using StreamReader reader = mkvMergeProcess!.StandardOutput;
+                string mkvMergeOutput = reader.ReadToEnd();
+
+                if (mkvMergeProcess.ExitCode == 0 && mkvMergeOutput.Contains("multiplexing took", StringComparison.OrdinalIgnoreCase))
+                {
+                    File.Delete(videoPath);
+                    File.Copy(outputFilePath, videoPath);
+                    File.Delete(outputFilePath);
+                    Directory.Delete(tmpFolder);
+                }
+
+                mkvInfo = MkvMergeHelper.GetMkvInfo(video.Path)!;
+            }
         }
 
         public static void OCRSubtitles(BaseItem video, MkvMergeOutput mkvInfo)
