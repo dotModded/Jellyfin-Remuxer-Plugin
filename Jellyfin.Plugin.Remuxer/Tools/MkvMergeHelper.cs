@@ -168,6 +168,12 @@ namespace Jellyfin.Plugin.Remuxer.Tools
         /// </summary>
         [JsonPropertyName("track_name")]
         public string? TrackName { get; set; }
+
+        /// <summary>
+        /// Gets or Sets Helper functions for interacting with MkvMerge.
+        /// </summary>
+        [JsonPropertyName("flag_original")]
+        public bool? OriginalTrack { get; set; }
     }
 
     /// <summary>

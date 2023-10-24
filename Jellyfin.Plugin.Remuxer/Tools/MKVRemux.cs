@@ -54,7 +54,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                     return;
                 }
 
-                if (config.KeepDefaultTrack && (track.Properties!.DefaultTrack == true || track.Properties!.ForcedTrack == true))
+                if (config.KeepDefaultTrack && (track.Properties!.DefaultTrack == true || (track.Properties!.ForcedTrack == true || track.Properties!.OriginalTrack == true)))
                 {
                     return;
                 }
@@ -150,7 +150,10 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                         var fileExtension = isTextSubtitle ? "srt" : isPgsSubtitle ? "sub" : isVobSubSubtitle ? "sup" : "unknown";
                         var fileName = Path.GetFileNameWithoutExtension(videoPath);
                         var fileDir = Path.GetDirectoryName(videoPath)!;
-                        var outputSubtitleFilePath = $@"""{Path.Combine(fileDir, $"{fileName}.{trackId}.{trackLang}.{fileExtension}")}""";
+
+                        var trackName = track.Properties!.TrackName == null ? string.Empty : $".{track.Properties!.TrackName}";
+
+                        var outputSubtitleFilePath = $@"""{Path.Combine(fileDir, $"{fileName}.{trackId}.{trackLang}{trackName}.{fileExtension}")}""";
 
                         mkvExtractArgs += $"{trackId}:{outputSubtitleFilePath} ";
                         subtitleTrackIdsToRemove.Add(trackId);  // Add the text subtitle track id to the list of tracks to be removed
