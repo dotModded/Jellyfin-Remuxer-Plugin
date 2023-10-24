@@ -150,14 +150,10 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                         var fileExtension = isTextSubtitle ? "srt" : isPgsSubtitle ? "sub" : isVobSubSubtitle ? "sup" : "unknown";
                         var fileName = Path.GetFileNameWithoutExtension(videoPath);
                         var fileDir = Path.GetDirectoryName(videoPath)!;
-                        var outputSubtitleFilePath = $@"""{Path.Combine(fileDir, $"fileName.{trackId}.{trackLang}.{fileExtension}")}""";
+                        var outputSubtitleFilePath = $@"""{Path.Combine(fileDir, $"{fileName}.{trackId}.{trackLang}.{fileExtension}")}""";
 
                         mkvExtractArgs += $"{trackId}:{outputSubtitleFilePath} ";
-
-                        if (config.ExtractOnlyTextSubs && isTextSubtitle)
-                        {
-                            subtitleTrackIdsToRemove.Add(trackId);  // Add the text subtitle track id to the list of tracks to be removed if the configuration is set to extract text subtitles only
-                        }
+                        subtitleTrackIdsToRemove.Add(trackId);  // Add the text subtitle track id to the list of tracks to be removed
                     }
                 }
 
