@@ -31,7 +31,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
             if (mkvInfo != null && mkvInfo.Tracks != null)
             {
                 StripMedia(video, ref mkvInfo);
-                ExtractSubtitles(video, mkvInfo);
+                ExtractSubtitles(video, ref mkvInfo);
                 OCRSubtitles(video, mkvInfo);
             }
         }
@@ -120,7 +120,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
             }
         }
 
-        public static void ExtractSubtitles(BaseItem video, MkvMergeOutput mkvInfo)
+        public static void ExtractSubtitles(BaseItem video, ref MkvMergeOutput mkvInfo)
         {
             var config = Plugin.Instance!.Configuration;
             var videoPath = video.Path;  // Assuming BaseItem has a Path property that provides the path to the MKV file
@@ -138,7 +138,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                         var trackId = track.Id;
                         var trackLang = track.Properties!.Language;
                         var isTextSubtitle = track.Codec!.Contains("SRT", StringComparison.OrdinalIgnoreCase) ||
-                                             track.Codec!.Contains("ASS", StringComparison.OrdinalIgnoreCase);
+                                             track.Codec.Contains("ASS", StringComparison.OrdinalIgnoreCase);
                         var isPgsSubtitle = track.Codec.Contains("PGS", StringComparison.OrdinalIgnoreCase);
                         var isVobSubSubtitle = track.Codec.Contains("VOB", StringComparison.OrdinalIgnoreCase);
 
@@ -153,7 +153,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
 
                         var trackName = track.Properties!.TrackName == null ? string.Empty : $".{track.Properties!.TrackName}";
 
-                        var outputSubtitleFilePath = $@"""{Path.Combine(fileDir, $"{fileName}.{trackId}.{trackLang}{trackName}.{fileExtension}")}""";
+                        var outputSubtitleFilePath = $@"""{Path.Join(fileDir, $"{fileName}.{trackId}.{trackLang}{trackName}.{fileExtension}")}""";
 
                         mkvExtractArgs += $"{trackId}:{outputSubtitleFilePath} ";
                         subtitleTrackIdsToRemove.Add(trackId);  // Add the text subtitle track id to the list of tracks to be removed
@@ -180,7 +180,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                 }
             }
 
-            if (config!.ExtractSubsMode == Configuration.RemuxExtractMode.ExtractAndRemux)
+            if (config!.ExtractSubsMode == Configuration.RemuxExtractMode.ExtractAndRemux && subtitleTrackIdsToRemove.Count > 0)
             {
                 // Remove tracks
                 var subtitleTrackIdsToRemoveArgument = string.Join(",", subtitleTrackIdsToRemove);
