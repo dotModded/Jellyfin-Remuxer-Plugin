@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.IO;
-using MediaBrowser.Controller.MediaEncoding;
-using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.Remuxer.Tools
 {
     internal class MKVRemux
     {
+        private static readonly HashSet<char> _invalidFileNameChars = new(Path.GetInvalidFileNameChars());
+
         public MKVRemux()
         {
         }
@@ -137,21 +133,52 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                     {
                         var trackId = track.Id;
                         var trackLang = track.Properties!.Language;
-                        var isTextSubtitle = track.Codec!.Contains("SRT", StringComparison.OrdinalIgnoreCase) ||
-                                             track.Codec.Contains("ASS", StringComparison.OrdinalIgnoreCase);
-                        var isPgsSubtitle = track.Codec.Contains("PGS", StringComparison.OrdinalIgnoreCase);
-                        var isVobSubSubtitle = track.Codec.Contains("VOB", StringComparison.OrdinalIgnoreCase);
+                        var isSRT = track.Codec!.Contains("SRT", StringComparison.OrdinalIgnoreCase); // .srt
+                        var isSSA = track.Codec.Contains("SubStationAlpha", StringComparison.OrdinalIgnoreCase); // .ssa
+                        var isASS = track.Codec.Contains("ASS", StringComparison.OrdinalIgnoreCase); // .ass
+                        var isPgsSubtitle = track.Codec.Contains("PGS", StringComparison.OrdinalIgnoreCase); // .sub
+                        var isVobSubSubtitle = track.Codec.Contains("VOB", StringComparison.OrdinalIgnoreCase); // .sup
+
+                        var isTextSubtitle = isSRT || isSSA || isASS;
 
                         if (config.ExtractOnlyTextSubs && !isTextSubtitle)
                         {
                             continue;  // Skip this track if it's not a text subtitle and the configuration is set to extract text subtitles only
                         }
 
-                        var fileExtension = isTextSubtitle ? "srt" : isPgsSubtitle ? "sub" : isVobSubSubtitle ? "sup" : "unknown";
+                        var fileExtension = "unknown";
+                        if (isSRT)
+                        {
+                            fileExtension = "srt";
+                        }
+                        else if (isSSA)
+                        {
+                            fileExtension = "ssa";
+                        }
+                        else if (isASS)
+                        {
+                            fileExtension = "ass";
+                        }
+                        else if (isPgsSubtitle)
+                        {
+                            fileExtension = "sub";
+                        }
+                        else if (isVobSubSubtitle)
+                        {
+                            fileExtension = ".sup";
+                        }
+
                         var fileName = Path.GetFileNameWithoutExtension(videoPath);
                         var fileDir = Path.GetDirectoryName(videoPath)!;
 
-                        var trackName = track.Properties!.TrackName == null ? string.Empty : $".{track.Properties!.TrackName}";
+                        var trackName = string.Empty;
+                        if (track.Properties!.TrackName != null)
+                        {
+                            trackName = string.Concat(
+                                track.Properties!.TrackName
+                                .Select(c => _invalidFileNameChars.Contains(c) ? ' ' : c)
+                                .Prepend('.'));
+                        }
 
                         var outputSubtitleFilePath = $@"""{Path.Join(fileDir, $"{fileName}.{trackId}.{trackLang}{trackName}.{fileExtension}")}""";
 
@@ -163,7 +190,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                 // Extract subtitles with a single mkvextract call
                 if (mkvExtractArgs.Length > 0)
                 {
-                    var mkvExtractProcess = new Process
+                    using var mkvExtractProcess = new Process
                     {
                         StartInfo = new ProcessStartInfo
                         {
