@@ -165,7 +165,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                         }
                         else if (isVobSubSubtitle)
                         {
-                            fileExtension = ".sup";
+                            fileExtension = "sup";
                         }
 
                         var fileName = Path.GetFileNameWithoutExtension(videoPath);
