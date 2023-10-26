@@ -22,11 +22,13 @@ As this project is for development purposes, no precompiled binaries are provide
 
 ## Future Plans
 
+- Better language code handling.
+
 - Cache MKV identify in database and skip already processed files.
 
 - Finish MKV identify object raw representation, and create generic track info types.
 
-- Create more robust settings for finer control of remux.
+- Create more robust settings for finer control of remux. Especially with subtitles.
 
 - Async with configurable process count.
 
