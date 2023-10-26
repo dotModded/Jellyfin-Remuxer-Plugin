@@ -30,6 +30,10 @@ As this project is for development purposes, no precompiled binaries are provide
 
 - Async with configurable process count.
 
+- Process newly added media to Jellyfin.
+
+- UI for controlling settings per video or collections thereof. Potential Issue is colliding settings.
+
 - MP4 and DolbyMP4 Pipelines.
 
-- [] Dolby Vision Profile Conversions.
+- Dolby Vision Profile Conversions.
