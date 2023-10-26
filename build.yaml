@@ -4,10 +4,10 @@ guid: "eb5d7894-8eef-4b36-aa6f-5d124e828ce1"
 version: "1.0.0.0"
 targetAbi: "10.8.0.0"
 framework: "net6.0"
-overview: "Short description about your plugin"
+overview: "A Jellyfin Plugin for Remuxing your media"
 description: >
-  This is a longer description that can span more than one
-  line and include details about your plugin.
+  This plugin is a cli wrapper for multiple tools, assure MKVToolNix, SubtitleEdit, and any other tools you plan to automate in your Path.
+  WARNING: This plugin can modify your media files perminantly and may not recober from failure, use at your own risk.
 category: "General"
 owner: "jellyfin"
 artifacts:
