@@ -16,20 +16,20 @@ As this project is for development purposes, no precompiled binaries are provide
 
 ## Currently Developing
 
-- [] Automatic OCR Image Subs with Subtitle Edit
+- Automatic OCR Image Subs with Subtitle Edit
 
-- [] Improved tmp folder handling
+- Improved tmp folder handling
 
 ## Future Plans
 
-- [] Cache MKV identify in database and skip already processed files.
+- Cache MKV identify in database and skip already processed files.
 
-- [] Finish MKV identify object raw representation, and create generic track info types.
+- Finish MKV identify object raw representation, and create generic track info types.
 
-- [] Create more robust settings for finer control of remux.
+- Create more robust settings for finer control of remux.
 
-- [] Async with configurable process count.
+- Async with configurable process count.
 
-- [] MP4 and DolbyMP4 Pipelines.
+- MP4 and DolbyMP4 Pipelines.
 
 - [] Dolby Vision Profile Conversions.
