@@ -93,7 +93,7 @@ public class RemuxTask : IScheduledTask
                 switch (video.Container)
                 {
                     case string s when s.Contains("mkv", StringComparison.OrdinalIgnoreCase):
-                        MKVProcessor.(video);
+                        MKVRemux.ProcessMediaItem(video);
                         break;
                     default:
                         break;
