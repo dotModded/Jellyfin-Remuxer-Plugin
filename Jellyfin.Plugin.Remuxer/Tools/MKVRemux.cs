@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Jellyfin.Plugin.Remuxer.Models;
 using MediaBrowser.Controller.Entities;
 
 namespace Jellyfin.Plugin.Remuxer.Tools
@@ -22,7 +23,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                 return;
             }
 
-            var mkvInfo = MkvMergeHelper.GetMkvInfo(video.Path);
+            var mkvInfo = MkvMergeIdentify.GetMkvInfo(video.Path);
 
             if (mkvInfo != null && mkvInfo.Tracks != null)
             {
@@ -112,7 +113,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                     Directory.Delete(tmpFolder);
                 }
 
-                mkvInfo = MkvMergeHelper.GetMkvInfo(video.Path)!;
+                mkvInfo = MkvMergeIdentify.GetMkvInfo(video.Path)!;
             }
         }
 
@@ -180,7 +181,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                                 .Prepend('.'));
                         }
 
-                        var outputSubtitleFilePath = $@"""{Path.Join(fileDir, $"{fileName}.{trackId}.{trackLang}{trackName}.{fileExtension}")}""";
+                        var outputSubtitleFilePath = $@"""{Path.Join(fileDir, $"{fileName}.{trackId}.{trackLang}.{trackName}.{fileExtension}")}""";
 
                         mkvExtractArgs += $"{trackId}:{outputSubtitleFilePath} ";
                         subtitleTrackIdsToRemove.Add(trackId);  // Add the text subtitle track id to the list of tracks to be removed
@@ -238,7 +239,7 @@ namespace Jellyfin.Plugin.Remuxer.Tools
                     Directory.Delete(tmpFolder);
                 }
 
-                mkvInfo = MkvMergeHelper.GetMkvInfo(video.Path)!;
+                mkvInfo = MkvMergeIdentify.GetMkvInfo(video.Path)!;
             }
         }
 

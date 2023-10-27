@@ -4,16 +4,40 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jellyfin.Plugin.Remuxer", "Jellyfin.Plugin.Remuxer\Jellyfin.Plugin.Remuxer.csproj", "{D921B930-CF91-406F-ACBC-08914DCD0D34}"
 EndProject
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "jellyfin", "..\jellyfin_20231026.5\jellyfin.exe", "{C374167C-04E2-4AF8-8C97-DB3C2D780378}"
+	ProjectSection(DebuggerProjectSystem) = preProject
+		PortSupplier = 00000000-0000-0000-0000-000000000000
+		Executable = C:\Users\Joey\Development\Jellyfin Development\jellyfin_20231026.5\jellyfin.exe
+		RemoteMachine = SMOL
+		StartingDirectory = C:\Users\Joey\Development\Jellyfin Development\jellyfin_20231026.5
+		Environment = Default
+		LaunchingEngine = 00000000-0000-0000-0000-000000000000
+		UseLegacyDebugEngines = No
+		LaunchSQLEngine = No
+		AttachLaunchAction = No
+		IORedirection = Auto
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Debug|x64.Build.0 = Debug|Any CPU
 		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Release|x64.ActiveCfg = Release|Any CPU
+		{D921B930-CF91-406F-ACBC-08914DCD0D34}.Release|x64.Build.0 = Release|Any CPU
+		{C374167C-04E2-4AF8-8C97-DB3C2D780378}.Debug|Any CPU.ActiveCfg = Release|x64
+		{C374167C-04E2-4AF8-8C97-DB3C2D780378}.Debug|x64.ActiveCfg = Release|x64
+		{C374167C-04E2-4AF8-8C97-DB3C2D780378}.Release|Any CPU.ActiveCfg = Release|x64
+		{C374167C-04E2-4AF8-8C97-DB3C2D780378}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -63,6 +63,11 @@ public enum RemuxOCRMode
     /// Utilizes Tesseract to OCR image based subtitles.
     /// </summary>
     Tesseract,
+
+    /// <summary>
+    /// Utilizes nOCR to OCR image based subtitles.
+    /// </summary>
+    NOCR,
 }
 
 /// <summary>
@@ -81,6 +86,7 @@ public class PluginConfiguration : BasePluginConfiguration
         ExtractSubsMode = RemuxExtractMode.DoNone;
         ExtractOnlyTextSubs = true;
         OCRMode = RemuxOCRMode.DoNone;
+        // Defauult behavior wont ocr languages that already have text subs.
         OCRAlways = false;
     }
 
